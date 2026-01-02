@@ -346,10 +346,10 @@ async function submitForm() {
         };
         
         // IMPORTANT: Replace with your Apps Script URL after deployment
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxwaKjINET97Cm8E6gs42cuGsUgvEDjq8at9af-ssx7cxWpw84IABoTF7dqR2qtafsz/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwt8sLRHe-ThdwCA2bzKhZ8P6ZHVL4nfuH4TXMc7b5vqoAoAcUXmUMmjOInUJPxrcUSYw/exec';
         
         // Send to Google Apps Script
-        if (scriptUrl && scriptUrl !== 'https://script.google.com/macros/s/AKfycbxwaKjINET97Cm8E6gs42cuGsUgvEDjq8at9af-ssx7cxWpw84IABoTF7dqR2qtafsz/exec') {
+        if (scriptUrl && scriptUrl !== 'https://script.google.com/macros/s/AKfycbwt8sLRHe-ThdwCA2bzKhZ8P6ZHVL4nfuH4TXMc7b5vqoAoAcUXmUMmjOInUJPxrcUSYw/exec') {
             const response = await fetch(scriptUrl, {
                 method: 'POST',
                 headers: {
