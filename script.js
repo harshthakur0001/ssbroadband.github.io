@@ -19,16 +19,22 @@ let formData = {
 document.addEventListener('DOMContentLoaded', function() {
     // Hide loading screen after 1.5 seconds
     setTimeout(() => {
-        document.getElementById('loadingScreen').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContainer').style.opacity = '1';
-        }, 500);
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                document.getElementById('mainContainer').style.opacity = '1';
+            }, 500);
+        }
     }, 1500);
 
     // Set today as max date for DOB
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('dob').max = today;
+    const dobInput = document.getElementById('dob');
+    if (dobInput) {
+        dobInput.max = today;
+    }
 
     // Initialize form validation
     initializeValidation();
@@ -39,9 +45,11 @@ function nextStep(next) {
     const currentStep = document.querySelector('.form-step.active');
     const nextStep = document.getElementById('step' + next);
     
+    if (!currentStep || !nextStep) return;
+    
     // Validate current step
     if (!validateStep(currentStep.id.replace('step', ''))) {
-        showError('कृपया सभी आवश्यक फ़ील्ड भरें');
+        showError('Please fill all required fields');
         return;
     }
     
@@ -65,6 +73,8 @@ function prevStep(prev) {
     const currentStep = document.querySelector('.form-step.active');
     const prevStep = document.getElementById('step' + prev);
     
+    if (!currentStep || !prevStep) return;
+    
     // Animation
     currentStep.classList.remove('active');
     currentStep.style.animation = 'slideOutRight 0.5s ease';
@@ -83,8 +93,11 @@ function prevStep(prev) {
 
 // Update Progress Bar
 function updateProgressBar(step) {
-    const progress = (step - 1) * 25;
-    document.getElementById('progressBar').style.width = `${progress}%`;
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+        const progress = (step - 1) * 25;
+        progressBar.style.width = `${progress}%`;
+    }
     
     document.querySelectorAll('.step').forEach(s => {
         s.classList.remove('active');
@@ -97,40 +110,61 @@ function updateProgressBar(step) {
 // Form Validation
 function initializeValidation() {
     // Phone number validation
-    document.getElementById('phoneNumber').addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').slice(0, 10);
-    });
+    const phoneInput = document.getElementById('phoneNumber');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 10);
+        });
+    }
     
     // Aadhar validation
-    document.getElementById('aadharNumber').addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').slice(0, 12);
-    });
+    const aadharInput = document.getElementById('aadharNumber');
+    if (aadharInput) {
+        aadharInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+        });
+    }
     
     // Pincode validation
-    document.getElementById('pincode').addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').slice(0, 6);
-    });
+    const pincodeInput = document.getElementById('pincode');
+    if (pincodeInput) {
+        pincodeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 6);
+        });
+    }
     
     // Email validation
-    document.getElementById('emailId').addEventListener('blur', function(e) {
-        const email = this.value;
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            showError('कृपया वैध ईमेल आईडी दर्ज करें');
-        }
-    });
+    const emailInput = document.getElementById('emailId');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function(e) {
+            const email = this.value;
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Please enter valid email ID');
+            }
+        });
+    }
 }
 
 function validateStep(step) {
     switch(step) {
         case '1':
-            const opName = document.getElementById('operatorName').value;
-            const custName = document.getElementById('customerName').value;
-            const phone = document.getElementById('phoneNumber').value;
-            const email = document.getElementById('emailId').value;
+            const opName = document.getElementById('operatorName')?.value || '';
+            const custName = document.getElementById('customerName')?.value || '';
+            const phone = document.getElementById('phoneNumber')?.value || '';
+            const email = document.getElementById('emailId')?.value || '';
             
-            if (!opName || !custName || !phone || !email) return false;
-            if (phone.length !== 10) return false;
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+            if (!opName.trim() || !custName.trim() || !phone.trim() || !email.trim()) {
+                showError('All fields are required');
+                return false;
+            }
+            if (phone.length !== 10) {
+                showError('Phone number must be 10 digits');
+                return false;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Please enter valid email');
+                return false;
+            }
             
             // Store data
             formData.operatorName = opName;
@@ -140,13 +174,22 @@ function validateStep(step) {
             return true;
             
         case '2':
-            const aadhar = document.getElementById('aadharNumber').value;
-            const dob = document.getElementById('dob').value;
-            const pincode = document.getElementById('pincode').value;
+            const aadhar = document.getElementById('aadharNumber')?.value || '';
+            const dob = document.getElementById('dob')?.value || '';
+            const pincode = document.getElementById('pincode')?.value || '';
             
-            if (!aadhar || !dob || !pincode) return false;
-            if (aadhar.length !== 12) return false;
-            if (pincode.length !== 6) return false;
+            if (!aadhar.trim() || !dob || !pincode.trim()) {
+                showError('All fields are required');
+                return false;
+            }
+            if (aadhar.length !== 12) {
+                showError('Aadhar number must be 12 digits');
+                return false;
+            }
+            if (pincode.length !== 6) {
+                showError('Pincode must be 6 digits');
+                return false;
+            }
             
             formData.aadharNumber = aadhar;
             formData.dob = dob;
@@ -155,22 +198,22 @@ function validateStep(step) {
             
         case '3':
             if (!formData.planSpeed || !formData.planValidity) {
-                showError('कृपया स्पीड और वैधता प्लान चुनें');
+                showError('Please select speed and validity plan');
                 return false;
             }
             return true;
             
         case '4':
             if (!formData.iptvApp) {
-                showError('कृपया IPTV ऐप चुनें');
+                showError('Please select IPTV app');
                 return false;
             }
             if (formData.iptvApp === 'onyxplay' && !formData.iptvCategory) {
-                showError('कृपया भाषा चुनें');
+                showError('Please select language');
                 return false;
             }
             if (formData.iptvApp === 'ziggtv' && !formData.iptvCategory) {
-                showError('कृपया पैकेज चुनें');
+                showError('Please select package');
                 return false;
             }
             return true;
@@ -231,28 +274,39 @@ function selectPackage(element) {
     formData.iptvCategory = element.textContent;
 }
 
-// Image Upload
+// Image Upload - FIXED
 function previewImage(event) {
     const file = event.target.files[0];
     if (!file) return;
     
+    // Check if file is an image
     if (!file.type.match('image.*')) {
-        showError('कृपया केवल इमेज फाइल अपलोड करें');
+        showError('Please upload only image files (JPG, PNG, etc.)');
         return;
     }
     
+    // Check file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-        showError('फाइल साइज 5MB से कम होनी चाहिए');
+        showError('File size must be less than 5MB');
         return;
     }
     
     const reader = new FileReader();
+    
     reader.onload = function(e) {
         const preview = document.getElementById('imagePreview');
-        preview.innerHTML = `<img src="${e.target.result}" alt="Aadhar Preview">`;
+        if (preview) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Aadhar Preview">`;
+        }
         formData.aadharPhoto = file;
         formData.imageUrl = e.target.result;
     };
+    
+    reader.onerror = function(error) {
+        console.error('Error reading file:', error);
+        showError('Error reading image file. Please try again.');
+    };
+    
     reader.readAsDataURL(file);
 }
 
@@ -263,15 +317,17 @@ async function submitForm() {
     
     // Show loading
     const submitBtn = document.querySelector('.btn-submit');
+    if (!submitBtn) return;
+    
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> प्रोसेस हो रहा है...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     submitBtn.disabled = true;
     
     try {
         // Get area name from pincode
         const areaName = await getAreaFromPincode(formData.pincode);
         
-        // Prepare data for Google Sheets
+        // Prepare data for submission
         const submissionData = {
             timestamp: new Date().toISOString(),
             operatorName: formData.operatorName,
@@ -286,27 +342,37 @@ async function submitForm() {
             dob: formData.dob,
             languageSelection: formData.iptvApp === 'onyxplay' ? formData.iptvCategory : '',
             iptvPackage: formData.iptvApp === 'ziggtv' ? formData.iptvCategory : '',
-            imageData: formData.imageUrl
+            imageData: formData.imageUrl || ''
         };
         
-        // Send to Google Apps Script
-        const response = await fetch('YOUR_APPS_SCRIPT_URL', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submissionData)
-        });
+        // IMPORTANT: Replace with your Apps Script URL after deployment
+        const scriptUrl = 'YOUR_APPS_SCRIPT_URL_HERE';
         
-        if (response.ok) {
-            showSuccess();
+        // Send to Google Apps Script
+        if (scriptUrl && scriptUrl !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+            const response = await fetch(scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submissionData)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
         } else {
-            throw new Error('Submission failed');
+            // For testing without Apps Script
+            console.log('Form data:', submissionData);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
+        
+        showSuccess();
         
     } catch (error) {
         console.error('Error:', error);
-        showError('सबमिशन में त्रुटि। कृपया बाद में पुनः प्रयास करें।');
+        showError('Submission error. Please try again later.');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
@@ -318,8 +384,8 @@ async function getAreaFromPincode(pincode) {
         const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
         const data = await response.json();
         
-        if (data[0].Status === 'Success') {
-            return data[0].PostOffice[0].District;
+        if (data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice[0]) {
+            return data[0].PostOffice[0].District || 'Area not found';
         }
     } catch (error) {
         console.error('Error fetching area:', error);
@@ -329,8 +395,11 @@ async function getAreaFromPincode(pincode) {
 
 // Show Success Message
 function showSuccess() {
-    document.querySelector('.form-container').style.display = 'none';
-    document.getElementById('successMessage').style.display = 'block';
+    const formContainer = document.querySelector('.form-container');
+    const successMessage = document.getElementById('successMessage');
+    
+    if (formContainer) formContainer.style.display = 'none';
+    if (successMessage) successMessage.style.display = 'block';
     
     // Send Telegram notification
     sendTelegramNotification();
@@ -338,18 +407,18 @@ function showSuccess() {
 
 // Send Telegram Notification
 async function sendTelegramNotification() {
-    const message = `🚀 *नया कनेक्शन रिक्वेस्ट*
+    const message = `🚀 *New Connection Request*
     
-👤 *ग्राहक:* ${formData.customerName}
-📞 *फोन:* ${formData.phoneNumber}
-📧 *ईमेल:* ${formData.emailId}
-🆔 *आधार:* ${formData.aadharNumber}
-⚡ *स्पीड:* ${formData.planSpeed}
-📅 *वैधता:* ${formData.planValidity}
+👤 *Customer:* ${formData.customerName}
+📞 *Phone:* ${formData.phoneNumber}
+📧 *Email:* ${formData.emailId}
+🆔 *Aadhar:* ${formData.aadharNumber}
+⚡ *Speed:* ${formData.planSpeed}
+📅 *Validity:* ${formData.planValidity}
 📺 *IPTV:* ${formData.iptvApp} - ${formData.iptvCategory}
-📍 *पिन कोड:* ${formData.pincode}
+📍 *Pincode:* ${formData.pincode}
 
-✅ सबमिट किया गया: ${new Date().toLocaleString()}`;
+✅ Submitted: ${new Date().toLocaleString()}`;
     
     const chatIds = ["6582960717", "2028547811", "1492277630"];
     const token = "8428090705:AAGyI-23H2czhusnbZ6nNP324_DdqUU-DRI";
@@ -392,10 +461,11 @@ function resetForm() {
     };
     
     // Reset form fields
-    document.getElementById('step1').reset();
-    document.getElementById('step2').reset();
-    document.getElementById('step3').reset();
-    document.getElementById('step4').reset();
+    const forms = ['step1', 'step2', 'step3', 'step4'];
+    forms.forEach(step => {
+        const form = document.getElementById(step);
+        if (form) form.reset();
+    });
     
     // Reset selections
     document.querySelectorAll('.plan-card, .iptv-card, .lang-card, .package-card').forEach(el => {
@@ -403,29 +473,41 @@ function resetForm() {
     });
     
     // Reset image preview
-    document.getElementById('imagePreview').innerHTML = '';
+    const imagePreview = document.getElementById('imagePreview');
+    if (imagePreview) imagePreview.innerHTML = '';
     
     // Hide sections
-    document.getElementById('languageSection').style.display = 'none';
-    document.getElementById('packageSection').style.display = 'none';
+    const languageSection = document.getElementById('languageSection');
+    const packageSection = document.getElementById('packageSection');
+    if (languageSection) languageSection.style.display = 'none';
+    if (packageSection) packageSection.style.display = 'none';
     
     // Show form, hide success
-    document.getElementById('successMessage').style.display = 'none';
-    document.querySelector('.form-container').style.display = 'block';
+    const successMessage = document.getElementById('successMessage');
+    const formContainer = document.querySelector('.form-container');
+    if (successMessage) successMessage.style.display = 'none';
+    if (formContainer) formContainer.style.display = 'block';
     
     // Go to step 1
     document.querySelectorAll('.form-step').forEach(step => {
         step.classList.remove('active');
         step.style.display = 'none';
     });
-    document.getElementById('step1').classList.add('active');
-    document.getElementById('step1').style.display = 'block';
+    
+    const step1 = document.getElementById('step1');
+    if (step1) {
+        step1.classList.add('active');
+        step1.style.display = 'block';
+    }
     
     updateProgressBar(1);
 }
 
 // Error Handling
 function showError(message) {
+    // Remove existing error messages
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    
     // Create error element
     const errorEl = document.createElement('div');
     errorEl.className = 'error-message';
@@ -433,21 +515,6 @@ function showError(message) {
         <i class="fas fa-exclamation-circle"></i>
         <span>${message}</span>
         <i class="fas fa-times" onclick="this.parentElement.remove()"></i>
-    `;
-    errorEl.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #ff4757;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 10000;
-        animation: slideInRight 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
     `;
     
     document.body.appendChild(errorEl);
@@ -460,32 +527,3 @@ function showError(message) {
         }
     }, 5000);
 }
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideOutLeft {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(-100px); opacity: 0; }
-    }
-    
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100px); opacity: 0; }
-    }
-    
-    @keyframes slideInRight {
-        from { transform: translateX(100px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .error-message {
-        font-size: 0.9rem;
-    }
-    
-    .error-message i.fa-times {
-        cursor: pointer;
-        margin-left: 10px;
-    }
-`;
-document.head.appendChild(style);
