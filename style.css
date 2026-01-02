@@ -134,7 +134,6 @@ body {
     font-weight: bold;
     color: #666;
     transition: all 0.3s ease;
-    cursor: pointer;
 }
 
 .step.active {
@@ -240,13 +239,15 @@ body {
     margin-top: 15px;
     border-radius: 12px;
     overflow: hidden;
+    min-height: 50px;
 }
 
 .image-preview img {
     width: 100%;
     max-height: 200px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 12px;
+    border: 1px solid #ddd;
 }
 
 /* Plan Cards */
@@ -457,6 +458,29 @@ body {
     font-size: 0.9rem;
 }
 
+/* Error Message */
+.error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4757;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    font-size: 0.9rem;
+}
+
+.error-message i.fa-times {
+    cursor: pointer;
+    margin-left: 10px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -493,6 +517,12 @@ body {
     .btn-prev, .btn-next, .btn-submit {
         width: 100%;
     }
+    
+    .error-message {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -507,4 +537,24 @@ body {
     .form-title {
         font-size: 1.5rem;
     }
+    
+    .file-upload {
+        padding: 20px;
+    }
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100px); opacity: 0; }
+}
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100px); opacity: 0; }
 }
