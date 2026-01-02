@@ -367,6 +367,20 @@ body {
     border-color: #6a11cb;
 }
 
+/* IPTV Cards में None option के लिए special styling */
+.iptv-card[data-app="none"] .iptv-icon {
+    color: #6c757d;
+}
+
+.iptv-card[data-app="none"].selected {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border-color: #6c757d;
+}
+
+.iptv-card[data-app="none"]:hover {
+    border-color: #6c757d;
+}
 /* Buttons */
 .button-group {
     display: flex;
