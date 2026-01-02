@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftConnect | Cab Generation Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #10b981;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header & Logo */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+        }
+        
+        .logo-subtext {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        
+        /* Form Container */
+        .form-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem 3rem 1rem;
+            position: relative;
+            background-color: #f8fafc;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 3rem;
+            right: 3rem;
+            height: 3px;
+            background-color: var(--light-gray);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: white;
+            border: 3px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .step.active .step-circle {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step.completed .step-circle {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+        }
+        
+        /* Form Sections */
+        .form-section {
+            padding: 2.5rem 3rem;
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .input-label i {
+            color: var(--primary);
+        }
+        
+        .input-field {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        /* File Upload */
+        .file-upload-container {
+            border: 2px dashed var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-upload-container:hover {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.02);
+        }
+        
+        .file-upload-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .file-upload-hint {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .file-preview {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Plan Options */
+        .plan-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .plan-option {
+            border: 2px solid var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .plan-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .plan-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .plan-speed {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .plan-unit {
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* IPTV Options */
+        .iptv-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .iptv-option {
+            border: 2px solid var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .iptv-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.03);
+        }
+        
+        .iptv-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+            transform: scale(1.03);
+        }
+        
+        .iptv-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .iptv-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Sub Options */
+        .sub-options {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .sub-options.active {
+            display: block;
+        }
+        
+        .sub-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .sub-option {
+            background-color: var(--light);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .sub-option:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .sub-option.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-prev {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .btn-prev:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .btn-next {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-submit {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background-color: #0da271;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .success-title {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .success-text {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            background-color: white;
+            margin-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+            }
+            
+            .progress-steps, .form-section {
+                padding: 1.5rem;
+            }
+            
+            .plan-options, .iptv-options {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .progress-steps {
+                padding: 1.5rem 1rem;
+            }
+            
+            .step-circle {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <header class="header">
+        <div class="logo-container">
+            <i class="fas fa-taxi logo-icon"></i>
+            <div>
+                <div class="logo-text">SwiftConnect</div>
+                <div class="logo-subtext">Fast & Reliable Cab Generation</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Form Container -->
+    <div class="form-container">
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step active" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Customer Details</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Aadhar Details</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Plan Selection</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-circle">4</div>
+                <div class="step-label">IPTV Selection</div>
+            </div>
+        </div>
+
+        <!-- Form Sections -->
+        
+        <!-- Section 1: Customer Details -->
+        <div class="form-section active" id="section1">
+            <h2 class="section-title">Customer Information</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label" for="operatorName">
+                        <i class="fas fa-user-tie"></i> Operator Name
+                    </label>
+                    <input type="text" id="operatorName" class="input-field" placeholder="Enter operator name">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="customerName">
+                        <i class="fas fa-user"></i> Customer Name
+                    </label>
+                    <input type="text" id="customerName" class="input-field" placeholder="Enter customer name">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="phoneNumber">
+                        <i class="fas fa-phone"></i> Customer Phone Number
+                    </label>
+                    <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter phone number">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="emailId">
+                        <i class="fas fa-envelope"></i> Customer Email ID
+                    </label>
+                    <input type="email" id="emailId" class="input-field" placeholder="Enter email address">
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <div></div> <!-- Empty div for spacing -->
+                <button class="btn btn-next" id="next1">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 2: Aadhar Details -->
+        <div class="form-section" id="section2">
+            <h2 class="section-title">Aadhar Verification</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label" for="aadharNumber">
+                        <i class="fas fa-id-card"></i> Aadhar Number
+                    </label>
+                    <input type="text" id="aadharNumber" class="input-field" placeholder="Enter 12-digit Aadhar number">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="dob">
+                        <i class="fas fa-birthday-cake"></i> Date of Birth
+                    </label>
+                    <input type="date" id="dob" class="input-field">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="pincode">
+                        <i class="fas fa-map-marker-alt"></i> Area Pincode
+                    </label>
+                    <input type="text" id="pincode" class="input-field" placeholder="Enter 6-digit pincode">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-camera"></i> Aadhar Front Photo
+                    </label>
+                    <div class="file-upload-container" id="fileUpload">
+                        <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                        <div class="file-upload-text">Click to upload Aadhar photo</div>
+                        <div class="file-upload-hint">Supports JPG, PNG (Max 5MB)</div>
+                        <input type="file" id="aadharPhoto" accept="image/*" style="display: none;">
+                        <div class="file-preview" id="filePreview"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button class="btn btn-prev" id="prev2">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-next" id="next2">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 3: Plan Selection -->
+        <div class="form-section" id="section3">
+            <h2 class="section-title">Select Your Plan</h2>
+            
+            <div class="input-group">
+                <label class="input-label">
+                    <i class="fas fa-tachometer-alt"></i> Plan Speed (Mbps)
+                </label>
+                <div class="plan-options" id="planSpeedOptions">
+                    <!-- Plan options will be added by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-top: 2rem;">
+                <label class="input-label">
+                    <i class="fas fa-calendar-alt"></i> Plan Validity
+                </label>
+                <div class="plan-options" id="planValidityOptions">
+                    <!-- Validity options will be added by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button class="btn btn-prev" id="prev3">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-next" id="next3">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 4: IPTV Selection -->
+        <div class="form-section" id="section4">
+            <h2 class="section-title">IPTV Selection</h2>
+            
+            <div class="input-group">
+                <label class="input-label">
+                    <i class="fas fa-tv"></i> Select IPTV App
+                </label>
+                <div class="iptv-options" id="iptvAppOptions">
+                    <!-- IPTV options will be added by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Sub-options for OnyxPlay -->
+            <div class="sub-options" id="onyxplayOptions">
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-language"></i> Language Selection for OnyxPlay
+                    </label>
+                    <div class="sub-options-grid" id="languageOptions">
+                        <!-- Language options will be added by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sub-options for Zigg TV -->
+            <div class="sub-options" id="ziggOptions">
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-box"></i> Package Selection for Zigg TV
+                    </label>
+                    <div class="sub-options-grid" id="packageOptions">
+                        <!-- Package options will be added by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button class="btn btn-prev" id="prev4">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-submit" id="submitForm">
+                    Submit <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2 class="success-title">Successfully Submitted!</h2>
+            <p class="success-text">
+                Your cab generation request has been successfully submitted. 
+                Our team will contact you within 2 hours for further processing.
+            </p>
+            <button class="btn btn-next" id="newRequest">
+                <i class="fas fa-plus"></i> New Request
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2023 SwiftConnect. All rights reserved. | Data securely stored in Google Sheets</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">Fast, reliable, and glitch-free cab generation service</p>
+    </footer>
+
+    <script>
+        // Data for plan options
+        const planSpeeds = [20, 30, 40, 50, 60, 70, 100];
+        const planValidities = [1, 3, 6];
+        const languages = ["Hindi", "Marathi", "Bangali", "Gujrati", "Tamil"];
+        const ziggPackages = ["Starter Plus", "Starter", "Silver HD", "Bronze HD", "Damaka Pack"];
+
+        // DOM Elements
+        const sections = document.querySelectorAll('.form-section');
+        const steps = document.querySelectorAll('.step');
+        let currentSection = 0;
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize plan speed options
+            const planSpeedContainer = document.getElementById('planSpeedOptions');
+            planSpeeds.forEach(speed => {
+                const option = document.createElement('div');
+                option.className = 'plan-option';
+                option.innerHTML = `
+                    <div class="plan-speed">${speed}</div>
+                    <div class="plan-unit">Mbps</div>
+                `;
+                option.addEventListener('click', () => selectOption(option, 'planSpeed'));
+                planSpeedContainer.appendChild(option);
+            });
+
+            // Initialize plan validity options
+            const planValidityContainer = document.getElementById('planValidityOptions');
+            planValidities.forEach(validity => {
+                const option = document.createElement('div');
+                option.className = 'plan-option';
+                option.innerHTML = `
+                    <div class="plan-speed">${validity}</div>
+                    <div class="plan-unit">${validity === 1 ? 'Month' : 'Months'}</div>
+                `;
+                option.addEventListener('click', () => selectOption(option, 'planValidity'));
+                planValidityContainer.appendChild(option);
+            });
+
+            // Initialize IPTV app options
+            const iptvContainer = document.getElementById('iptvAppOptions');
+            const onyxOption = document.createElement('div');
+            onyxOption.className = 'iptv-option';
+            onyxOption.id = 'onyxplayOption';
+            onyxOption.innerHTML = `
+                <i class="fas fa-play-circle iptv-icon"></i>
+                <div class="iptv-name">OnyxPlay</div>
+            `;
+            onyxOption.addEventListener('click', () => selectIPTVApp('onyxplay'));
+            
+            const ziggOption = document.createElement('div');
+            ziggOption.className = 'iptv-option';
+            ziggOption.id = 'ziggOption';
+            ziggOption.innerHTML = `
+                <i class="fas fa-tv iptv-icon"></i>
+                <div class="iptv-name">Zigg TV</div>
+            `;
+            ziggOption.addEventListener('click', () => selectIPTVApp('zigg'));
+            
+            iptvContainer.appendChild(onyxOption);
+            iptvContainer.appendChild(ziggOption);
+
+            // Initialize language options
+            const languageContainer = document.getElementById('languageOptions');
+            languages.forEach(language => {
+                const option = document.createElement('div');
+                option.className = 'sub-option';
+                option.textContent = language;
+                option.addEventListener('click', () => selectSubOption(option, 'language'));
+                languageContainer.appendChild(option);
+            });
+
+            // Initialize package options
+            const packageContainer = document.getElementById('packageOptions');
+            ziggPackages.forEach(pkg => {
+                const option = document.createElement('div');
+                option.className = 'sub-option';
+                option.textContent = pkg;
+                option.addEventListener('click', () => selectSubOption(option, 'package'));
+                packageContainer.appendChild(option);
+            });
+
+            // Set up file upload
+            document.getElementById('fileUpload').addEventListener('click', () => {
+                document.getElementById('aadharPhoto').click();
+            });
+
+            document.getElementById('aadharPhoto').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const preview = document.getElementById('filePreview');
+                    preview.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 1rem; background: #f1f5f9; padding: 1rem; border-radius: 0.5rem;">
+                            <i class="fas fa-file-image" style="color: var(--primary); font-size: 1.5rem;"></i>
+                            <div style="text-align: left;">
+                                <div style="font-weight: 600;">${file.name}</div>
+                                <div style="color: var(--gray); font-size: 0.9rem;">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                            </div>
+                        </div>
+                    `;
+                    preview.style.display = 'block';
+                }
+            });
+
+            // Set up navigation
+            document.getElementById('next1').addEventListener('click', () => navigateTo(1));
+            document.getElementById('next2').addEventListener('click', () => navigateTo(2));
+            document.getElementById('next3').addEventListener('click', () => navigateTo(3));
+            document.getElementById('prev2').addEventListener('click', () => navigateTo(0));
+            document.getElementById('prev3').addEventListener('click', () => navigateTo(1));
+            document.getElementById('prev4').addEventListener('click', () => navigateTo(2));
+            
+            // Set up form submission
+            document.getElementById('submitForm').addEventListener('click', submitForm);
+            
+            // Set up new request button
+            document.getElementById('newRequest').addEventListener('click', resetForm);
+        });
+
+        // Navigation function
+        function navigateTo(sectionIndex) {
+            // Validate current section before proceeding
+            if (sectionIndex > currentSection) {
+                if (!validateSection(currentSection)) {
+                    return;
+                }
+            }
+            
+            // Hide current section
+            sections[currentSection].classList.remove('active');
+            steps[currentSection].classList.remove('active');
+            
+            // Update current section
+            currentSection = sectionIndex;
+            
+            // Show new section
+            sections[currentSection].classList.add('active');
+            steps[currentSection].classList.add('active');
+            
+            // Mark previous steps as completed
+            for (let i = 0; i < currentSection; i++) {
+                steps[i].classList.add('completed');
+            }
+            
+            // Remove completed class from future steps
+            for (let i = currentSection + 1; i < steps.length; i++) {
+                steps[i].classList.remove('completed');
+            }
+        }
+
+        // Validate form section
+        function validateSection(sectionIndex) {
+            let isValid = true;
+            
+            if (sectionIndex === 0) {
+                // Validate customer details
+                const operatorName = document.getElementById('operatorName').value.trim();
+                const customerName = document.getElementById('customerName').value.trim();
+                const phoneNumber = document.getElementById('phoneNumber').value.trim();
+                const emailId = document.getElementById('emailId').value.trim();
+                
+                if (!operatorName) {
+                    alert('Please enter operator name');
+                    isValid = false;
+                } else if (!customerName) {
+                    alert('Please enter customer name');
+                    isValid = false;
+                } else if (!phoneNumber || phoneNumber.length < 10) {
+                    alert('Please enter a valid phone number');
+                    isValid = false;
+                } else if (!emailId || !isValidEmail(emailId)) {
+                    alert('Please enter a valid email address');
+                    isValid = false;
+                }
+            } else if (sectionIndex === 1) {
+                // Validate Aadhar details
+                const aadharNumber = document.getElementById('aadharNumber').value.trim();
+                const dob = document.getElementById('dob').value;
+                const pincode = document.getElementById('pincode').value.trim();
+                const aadharPhoto = document.getElementById('aadharPhoto').files[0];
+                
+                if (!aadharNumber || aadharNumber.length !== 12 || !/^\d+$/.test(aadharNumber)) {
+                    alert('Please enter a valid 12-digit Aadhar number');
+                    isValid = false;
+                } else if (!dob) {
+                    alert('Please select date of birth');
+                    isValid = false;
+                } else if (!pincode || pincode.length !== 6 || !/^\d+$/.test(pincode)) {
+                    alert('Please enter a valid 6-digit pincode');
+                    isValid = false;
+                } else if (!aadharPhoto) {
+                    alert('Please upload Aadhar front photo');
+                    isValid = false;
+                }
+            } else if (sectionIndex === 2) {
+                // Validate plan selection
+                const selectedPlan = document.querySelector('.plan-option.selected#planSpeedOptions .plan-option');
+                const selectedValidity = document.querySelector('.plan-option.selected#planValidityOptions .plan-option');
+                
+                if (!selectedPlan) {
+                    alert('Please select a plan speed');
+                    isValid = false;
+                } else if (!selectedValidity) {
+                    alert('Please select a plan validity');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Email validation function
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Select option function (for plan speed and validity)
+        function selectOption(element, type) {
+            // Remove selected class from all options in the same container
+            const container = element.parentElement;
+            container.querySelectorAll('.plan-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+        }
+
+        // Select IPTV app function
+        function selectIPTVApp(app) {
+            // Remove selected class from both IPTV options
+            document.getElementById('onyxplayOption').classList.remove('selected');
+            document.getElementById('ziggOption').classList.remove('selected');
+            
+            // Hide both sub-option sections
+            document.getElementById('onyxplayOptions').classList.remove('active');
+            document.getElementById('ziggOptions').classList.remove('active');
+            
+            // Show selected option and its sub-options
+            if (app === 'onyxplay') {
+                document.getElementById('onyxplayOption').classList.add('selected');
+                document.getElementById('onyxplayOptions').classList.add('active');
+            } else {
+                document.getElementById('ziggOption').classList.add('selected');
+                document.getElementById('ziggOptions').classList.add('active');
+            }
+        }
+
+        // Select sub-option function (for languages and packages)
+        function selectSubOption(element, type) {
+            // Remove selected class from all options in the same container
+            const container = element.parentElement;
+            container.querySelectorAll('.sub-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+        }
+
+        // Submit form function
+        function submitForm() {
+            // Validate section 4
+            if (!validateSection(3)) {
+                return;
+            }
+            
+            // Validate IPTV selection
+            const selectedIPTV = document.querySelector('.iptv-option.selected');
+            if (!selectedIPTV) {
+                alert('Please select an IPTV app');
+                return;
+            }
+            
+            // Get all form data
+            const formData = {
+                operatorName: document.getElementById('operatorName').value.trim(),
+                customerName: document.getElementById('customerName').value.trim(),
+                phoneNumber: document.getElementById('phoneNumber').value.trim(),
+                emailId: document.getElementById('emailId').value.trim(),
+                aadharNumber: document.getElementById('aadharNumber').value.trim(),
+                dob: document.getElementById('dob').value,
+                pincode: document.getElementById('pincode').value.trim(),
+                aadharPhoto: document.getElementById('aadharPhoto').files[0]?.name || 'Not uploaded',
+                planSpeed: document.querySelector('.plan-option.selected#planSpeedOptions .plan-option .plan-speed')?.textContent || 'Not selected',
+                planValidity: document.querySelector('.plan-option.selected#planValidityOptions .plan-option .plan-speed')?.textContent || 'Not selected',
+                iptvApp: selectedIPTV.id === 'onyxplayOption' ? 'OnyxPlay' : 'Zigg TV',
+                iptvCategory: ''
+            };
+            
+            // Get IPTV category based on selection
+            if (selectedIPTV.id === 'onyxplayOption') {
+                const selectedLanguage = document.querySelector('#languageOptions .sub-option.selected');
+                formData.iptvCategory = selectedLanguage ? selectedLanguage.textContent : 'Not selected';
+            } else {
+                const selectedPackage = document.querySelector('#packageOptions .sub-option.selected');
+                formData.iptvCategory = selectedPackage ? selectedPackage.textContent : 'Not selected';
+            }
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submitForm');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission (In real implementation, this would send to Google Sheets)
+            setTimeout(() => {
+                // In a real implementation, you would:
+                // 1. Send data to Google Apps Script
+                // 2. Google Apps Script would save to Google Sheets
+                // 3. Google Apps Script would send Telegram message
+                
+                console.log('Form data to be sent:', formData);
+                
+                // Show success message
+                document.getElementById('section4').classList.remove('active');
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Here you would actually send the data to Google Sheets
+                // Example: sendToGoogleSheets(formData);
+            }, 1500);
+        }
+
+        // Reset form function
+        function resetForm() {
+            // Reset all form fields
+            document.getElementById('operatorName').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('emailId').value = '';
+            document.getElementById('aadharNumber').value = '';
+            document.getElementById('dob').value = '';
+            document.getElementById('pincode').value = '';
+            document.getElementById('aadharPhoto').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            
+            // Reset selected options
+            document.querySelectorAll('.plan-option.selected').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.iptv-option.selected').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.sub-option.selected').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Hide sub-option sections
+            document.getElementById('onyxplayOptions').classList.remove('active');
+            document.getElementById('ziggOptions').classList.remove('active');
+            
+            // Hide success message
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Reset to first section
+            sections.forEach(section => section.classList.remove('active'));
+            steps.forEach(step => {
+                step.classList.remove('active');
+                step.classList.remove('completed');
+            });
+            
+            currentSection = 0;
+            sections[0].classList.add('active');
+            steps[0].classList.add('active');
+        }
+
+        // Function to send data to Google Sheets (to be implemented)
+        async function sendToGoogleSheets(formData) {
+            // This is where you would implement the actual Google Sheets integration
+            // You would typically use Google Apps Script with a web app endpoint
+            
+            /*
+            Example implementation:
+            
+            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+            
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            // Handle response
+            */
+        }
+    </script>
+</body>
+</html>
