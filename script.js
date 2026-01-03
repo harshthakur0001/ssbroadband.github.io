@@ -368,7 +368,7 @@ async function submitForm() {
         
         // IMPORTANT: Replace with your Apps Script Web App URL
         // Deploy Apps Script and paste the URL here
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwX2wcGSEj1K2oJc-Uy8Y2i38MU2YMWP4TJzDiZq3dmb2eopvOJOosfDOIZTn0HZf1WKA/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbx1i_zwY5RuXDfCzsuRxEBrEQwT4sy93dBz7cPl5S28GfX22DaXiw2UeivwMJsT6uqNpg/exec';
         
         if (!scriptUrl || scriptUrl.includes('YOUR_APPS_SCRIPT')) {
             throw new Error('Please set your Apps Script URL in script.js file');
